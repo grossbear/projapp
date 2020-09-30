@@ -1,22 +1,21 @@
 #include <stdio.h>
 #include "mswin.h"
+#include "appbase.h"
 
-extern bool running;
-
-MSWindow::MSWindow():
+AppWindow::AppWindow():
 hWnd(NULL)
 {
     printf("Window constructor\n");
-    CreateDisplayWindow();
+    CreateAppWindow();
 }
 
-MSWindow::~MSWindow()
+AppWindow::~AppWindow()
 {
     printf("Window destructor\n");
-    DestroyDisplayWindow();
+    DestroyAppWindow();
 }
 
-void MSWindow::ProcessMessages()
+void AppWindow::ProcessMessages()
 {
     MSG msg;
     if(PeekMessage(&msg,NULL,0,0,PM_REMOVE))    // Is There A Message Waiting?
@@ -26,14 +25,16 @@ void MSWindow::ProcessMessages()
     }
 }
 
-LRESULT CALLBACK MSWindow::WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK AppWindow::WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
-	switch(Message) {
-		
+    AppBase * app = AppBase::GetSingleton();
+	switch(Message) 
+    {
 		// Upon destruction, tell the main thread to stop 
-		case WM_DESTROY: {
+		case WM_DESTROY: 
+        {
 			PostQuitMessage(0);
-			running = false;
+			app->CloseApp();
 			break;
 		}
 		
@@ -44,7 +45,7 @@ LRESULT CALLBACK MSWindow::WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARA
 	return 0;
 }
 
-bool MSWindow::CreateDisplayWindow()
+bool AppWindow::CreateAppWindow()
 {
     HINSTANCE hInstance = GetModuleHandle(NULL);
     
@@ -54,7 +55,7 @@ bool MSWindow::CreateDisplayWindow()
 	// zero out the struct and set the stuff we want to modify  
 	memset(&wc,0,sizeof(wc));
 	wc.cbSize		 = sizeof(WNDCLASSEX);
-	wc.lpfnWndProc	 = MSWindow::WndProc; // This is where we will send messages to 
+	wc.lpfnWndProc	 = AppWindow::WndProc; // This is where we will send messages to 
 	wc.hInstance	 = hInstance;
 	wc.hCursor		 = LoadCursor(NULL, IDC_ARROW);
 	
@@ -84,7 +85,7 @@ bool MSWindow::CreateDisplayWindow()
 	return true;
 }
 
-bool MSWindow::DestroyDisplayWindow()
+bool AppWindow::DestroyAppWindow()
 {
     HINSTANCE hInstance = GetModuleHandle(NULL);
     if(hWnd)
@@ -95,5 +96,7 @@ bool MSWindow::DestroyDisplayWindow()
     }
     return false;
 }
+
+
 
 

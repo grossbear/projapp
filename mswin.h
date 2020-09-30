@@ -1,20 +1,20 @@
 #pragma once
 #include <windows.h>
-#include "appbase.h"
 
-class MSWindow
+class AppWindow
 {
 public:
-    MSWindow();
-    virtual ~MSWindow();
+    AppWindow();
+    virtual ~AppWindow();
     
     void ProcessMessages();
     
     static LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
     
 private:
-    bool CreateDisplayWindow();
-    bool DestroyDisplayWindow();
+    bool CreateAppWindow();
+    bool DestroyAppWindow();
     
     HWND hWnd;    
 };
+

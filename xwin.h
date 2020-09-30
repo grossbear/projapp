@@ -10,20 +10,19 @@
  
 #include <sys/utsname.h>
 
-#include "appbase.h"
 
-class XWindow
+class AppWindow
 {
 public:
-    XWindow();
-    virtual ~XWindow();
+    AppWindow();
+    virtual ~AppWindow();
     
     void ProcessMessages();
     
     
 private:
-    bool CreateDisplayWindow();
-    bool DestroyDisplayWindow();
+    bool CreateAppWindow();
+    bool DestroyAppWindow();
 
     Display * display;
     Window winId;

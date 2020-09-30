@@ -1,22 +1,22 @@
 #include <stdio.h>
 #include "xwin.h"
+#include "appbase.h"
 
-extern bool running;
 
-XWindow::XWindow():
+AppWindow::AppWindow():
 winId(0),display(NULL),uname_ok(false)
 {
     printf("window constructor\n");
-    CreateDisplayWindow();
+    CreateAppWindow();
 }
 
-XWindow::~XWindow()
+AppWindow::~AppWindow()
 {
     printf("window destructor\n");
-    DestroyDisplayWindow();
+    DestroyAppWindow();
 }
 
-void XWindow::ProcessMessages()
+void AppWindow::ProcessMessages()
 {
     XEvent e;
     XNextEvent(display, &e);
@@ -64,14 +64,14 @@ void XWindow::ProcessMessages()
       }
  
  
-      XWindowAttributes  wa;
-      XGetWindowAttributes(display, winId, &wa);
-      int width = wa.width;
-      int height = wa.height;
-      char buf[128]={0};
-      sprintf(buf, "Current window size: %dx%d", width, height);
-      XDrawString(display, winId, DefaultGC(display, s), 10, y_offset, buf, strlen(buf));
-      y_offset += 20;
+      //DisplayWindowAttributes wa;
+      //XGetWindowAttributes(display, winId, &wa);
+      //int width = wa.width;
+      //int height = wa.height;
+      //char buf[128]={0};
+      //sprintf(buf, "Current window size: %dx%d", width, height);
+      //XDrawString(display, winId, DefaultGC(display, s), 10, y_offset, buf, strlen(buf));
+      //y_offset += 20;
     }
  
     if (e.type == KeyPress)
@@ -80,18 +80,22 @@ void XWindow::ProcessMessages()
       KeySym keysym;
       int len = XLookupString(&e.xkey, buf, sizeof buf, &keysym, NULL);
       if (keysym == XK_Escape)
-        running = false;
+      {
+	AppBase * app = AppBase::GetSingleton();
+        app->CloseApp();
+      }
     }
  
     if ((e.type == ClientMessage) && 
         (static_cast<unsigned int>(e.xclient.data.l[0]) == WM_DELETE_WINDOW))
     {
-      running = false;
+	AppBase * app = AppBase::GetSingleton();
+        app->CloseApp();
     }
 }
 
 
-bool XWindow::CreateDisplayWindow()
+bool AppWindow::CreateAppWindow()
 {
   display = XOpenDisplay(NULL);
   if (display == NULL) 
@@ -122,7 +126,7 @@ bool XWindow::CreateDisplayWindow()
 	return true;
 }
 
-bool XWindow::DestroyDisplayWindow()
+bool AppWindow::DestroyAppWindow()
 {
     XDestroyWindow(display, winId);
     XCloseDisplay(display);
@@ -131,3 +135,4 @@ bool XWindow::DestroyDisplayWindow()
     winId = 0;
     return true;
 }
+

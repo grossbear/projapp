@@ -1,8 +1,5 @@
 #pragma once
-
-#if defined(_WIN32)
-#include "mswin.h"
-#endif
+#include "window.h"
 
 class AppBase
 {
@@ -19,4 +16,6 @@ protected:
     
 private:
     static AppBase * app;
+    bool running;
+    AppWindow * window;
 };
